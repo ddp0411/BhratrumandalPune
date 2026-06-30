@@ -1,10 +1,29 @@
-// Ported from Helpers/AppColors.swift
+// Bhratrumandal Pune — design system colors (UI/UX spec v1.0).
+// Calm, premium, trust-focused matrimonial palette. Avoid adding ad-hoc colors;
+// extend this token set instead so every screen stays consistent.
 export const colors = {
-  primary: '#D11C21', // Matrimony red (SwiftUI RGB 0.82, 0.11, 0.13)
-  background: '#FFFFFF', // systemBackground (light)
-  surface: '#F2F2F7', // secondarySystemBackground (light)
-  text: '#1C1C1E',
-  grayText: '#8E8E93', // SwiftUI Color.gray
-  border: '#E5E5EA',
+  // Primary — Deep Matrimony Red. CTAs, active icons/tabs, important actions.
+  primary: '#C62828',
+  primaryPressed: '#A81E1E',
+  // Soft tint of primary for chips, avatars, subtle highlights.
+  primarySoft: '#FBEAEA',
+
+  // Surfaces
+  background: '#FFFFFF', // main background
+  surface: '#F8F8F8', // card / input background
   white: '#FFFFFF',
+
+  // Text
+  text: '#222222', // text primary
+  textSecondary: '#666666',
+
+  // Lines & states
+  divider: '#ECECEC',
+  success: '#4CAF50',
+  warning: '#FF9800',
+  error: '#E53935',
+
+  // Legacy alias kept so older imports keep compiling.
+  grayText: '#666666',
+  border: '#ECECEC',
 } as const;

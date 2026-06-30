@@ -7,7 +7,3 @@ export type AuthStackParamList = {
   OTP: undefined;
   Signup: undefined;
 };
-
-export type AppStackParamList = {
-  Home: undefined;
-};

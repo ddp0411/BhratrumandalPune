@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
-import { colors } from '../theme/colors';
+import { colors, radius, spacing, type } from '../theme';
 
-// Ported from Views/Home/FilterChipsView.swift — adds a selected state.
-const FILTERS = ['New Matches', 'Nearby', 'Community', 'Profession', 'Active'];
+interface Filter {
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}
+
+// Horizontal quick filters. Selected chip fills with brand red.
+const FILTERS: Filter[] = [
+  { label: 'Nearby', icon: 'location-outline' },
+  { label: 'Verified', icon: 'shield-checkmark-outline' },
+  { label: 'New', icon: 'sparkles-outline' },
+  { label: 'Profession', icon: 'briefcase-outline' },
+  { label: 'Education', icon: 'school-outline' },
+  { label: 'Community', icon: 'people-outline' },
+];
 
 export default function FilterChips() {
   const [selected, setSelected] = useState(0);
@@ -18,11 +31,16 @@ export default function FilterChips() {
         const active = index === selected;
         return (
           <Pressable
-            key={item}
+            key={item.label}
             onPress={() => setSelected(index)}
             style={[styles.chip, active && styles.chipActive]}
           >
-            <Text style={[styles.text, active && styles.textActive]}>{item}</Text>
+            <Ionicons
+              name={item.icon}
+              size={16}
+              color={active ? colors.white : colors.textSecondary}
+            />
+            <Text style={[styles.text, active && styles.textActive]}>{item.label}</Text>
           </Pressable>
         );
       })}
@@ -32,24 +50,30 @@ export default function FilterChips() {
 
 const styles = StyleSheet.create({
   row: {
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
     backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.divider,
   },
   chipActive: {
     backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   text: {
-    color: colors.text,
-    fontSize: 14,
+    ...type.caption,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
   textActive: {
     color: colors.white,
-    fontWeight: '600',
   },
 });

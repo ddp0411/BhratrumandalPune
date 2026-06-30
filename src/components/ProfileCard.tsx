@@ -1,52 +1,95 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme/colors';
+import { useRef } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useWishlist } from '../context/WishlistContext';
+import { colors, radius, shadow, spacing, type, ANIM_DURATION } from '../theme';
 import { Profile } from '../types';
+import Avatar from './Avatar';
 
-// Ported from Views/Home/ProfileCardView.swift.
-// `image` references (e.g. "girl1") have no bundled asset yet, so we render a
-// placeholder icon — matching the SwiftUI "Photo Placeholder" behaviour.
 interface ProfileCardProps {
   profile: Profile;
+  onView?: (profile: Profile) => void;
 }
 
-export default function ProfileCard({ profile }: ProfileCardProps) {
-  const [liked, setLiked] = useState(false);
-  const [shortlisted, setShortlisted] = useState(false);
+// Profile card per spec: large photo (~65% of card), name/age/community/
+// profession/city, then three actions — Like, Shortlist, View. The heart
+// "bursts" on like for a small moment of delight.
+export default function ProfileCard({ profile, onView }: ProfileCardProps) {
+  const { isLiked, isShortlisted, toggleLike, toggleShortlist } = useWishlist();
+  const liked = isLiked(profile.id);
+  const shortlisted = isShortlisted(profile.id);
+  const burst = useRef(new Animated.Value(1)).current;
+
+  const onLike = () => {
+    toggleLike(profile.id);
+    if (!liked) {
+      burst.setValue(0.6);
+      Animated.spring(burst, { toValue: 1, friction: 4, useNativeDriver: true }).start();
+    }
+  };
 
   return (
     <View style={styles.card}>
-      <View style={styles.photo}>
-        <Ionicons name="person" size={64} color={colors.white} />
+      <View style={styles.photoWrap}>
+        <Avatar name={profile.name} tint={profile.tint} radius={0} style={styles.photo} />
+        {profile.verified ? (
+          <View style={styles.verified}>
+            <Ionicons name="shield-checkmark" size={14} color={colors.white} />
+            <Text style={styles.verifiedText}>Verified</Text>
+          </View>
+        ) : null}
       </View>
 
-      <Text style={styles.name}>
-        {profile.name}, {profile.age}
-      </Text>
-      <Text style={styles.meta}>
-        {profile.religion} • {profile.occupation}
-      </Text>
-      <Text style={styles.meta}>{profile.city}</Text>
+      <View style={styles.body}>
+        <Text style={styles.name}>
+          {profile.name}, {profile.age}
+        </Text>
+        <Text style={styles.meta}>
+          {profile.community} • {profile.occupation}
+        </Text>
+        <View style={styles.locationRow}>
+          <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
+          <Text style={styles.location}>{profile.city}</Text>
+        </View>
 
-      <View style={styles.actions}>
-        <Pressable style={styles.action} onPress={() => setLiked((v) => !v)}>
-          <Ionicons
-            name={liked ? 'heart' : 'heart-outline'}
-            size={20}
-            color={colors.primary}
-          />
-          <Text style={styles.actionText}>Like</Text>
-        </Pressable>
+        <View style={styles.divider} />
 
-        <Pressable style={styles.action} onPress={() => setShortlisted((v) => !v)}>
-          <Ionicons
-            name={shortlisted ? 'bookmark' : 'bookmark-outline'}
-            size={20}
-            color={colors.primary}
-          />
-          <Text style={styles.actionText}>Shortlist</Text>
-        </Pressable>
+        <View style={styles.actions}>
+          <Pressable style={styles.action} onPress={onLike} hitSlop={6}>
+            <Animated.View style={{ transform: [{ scale: liked ? burst : 1 }] }}>
+              <Ionicons
+                name={liked ? 'heart' : 'heart-outline'}
+                size={22}
+                color={liked ? colors.primary : colors.textSecondary}
+              />
+            </Animated.View>
+            <Text style={[styles.actionText, liked && styles.actionActive]}>Like</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.action}
+            onPress={() => toggleShortlist(profile.id)}
+            hitSlop={6}
+          >
+            <Ionicons
+              name={shortlisted ? 'star' : 'star-outline'}
+              size={22}
+              color={shortlisted ? colors.warning : colors.textSecondary}
+            />
+            <Text style={[styles.actionText, shortlisted && { color: colors.warning }]}>
+              Shortlist
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.action, styles.viewAction]}
+            onPress={() => onView?.(profile)}
+            hitSlop={6}
+          >
+            <Text style={styles.viewText}>View</Text>
+            <Ionicons name="chevron-forward" size={16} color={colors.white} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -54,40 +97,93 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    overflow: 'hidden',
+    ...shadow.soft,
+  },
+  photoWrap: {
+    position: 'relative',
   },
   photo: {
-    height: 180,
-    borderRadius: 12,
-    backgroundColor: colors.grayText,
+    width: '100%',
+    height: 280,
+  },
+  verified: {
+    position: 'absolute',
+    top: spacing.md,
+    left: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.success,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+  },
+  verifiedText: {
+    ...type.caption,
+    color: colors.white,
+    fontWeight: '600',
+  },
+  body: {
+    padding: spacing.lg,
   },
   name: {
-    marginTop: 12,
-    fontSize: 17,
-    fontWeight: '700',
+    ...type.cardTitle,
     color: colors.text,
   },
   meta: {
-    marginTop: 4,
-    color: colors.grayText,
-    fontSize: 14,
+    ...type.body,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  location: {
+    ...type.caption,
+    color: colors.textSecondary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.divider,
+    marginVertical: spacing.base,
   },
   actions: {
-    marginTop: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   action: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.xs,
   },
   actionText: {
-    color: colors.primary,
+    ...type.caption,
     fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  actionActive: {
+    color: colors.primary,
+  },
+  viewAction: {
+    marginLeft: 'auto',
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.button,
+  },
+  viewText: {
+    ...type.caption,
+    fontWeight: '700',
+    color: colors.white,
   },
 });
+
+// Animation timing reference kept consistent with the design system.
+export const PROFILE_CARD_ANIM = ANIM_DURATION;

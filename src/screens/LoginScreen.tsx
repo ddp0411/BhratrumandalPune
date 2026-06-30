@@ -1,5 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,12 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../components/PrimaryButton';
 import PrimaryTextField from '../components/PrimaryTextField';
 import { useAuth } from '../context/AuthContext';
-import { colors } from '../theme/colors';
-import { fonts } from '../theme/fonts';
+import { colors, spacing, type } from '../theme';
 import { AuthStackParamList } from '../navigation/types';
 
-// Ported from Views/LoginView.swift (brace bug fixed; .fullScreenCover replaced
-// with stack navigation to the OTP screen).
+// Login — simple and airy: logo, title, subtitle, one input, CTA, footer link.
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export default function LoginScreen({ navigation }: Props) {
@@ -36,22 +34,36 @@ export default function LoginScreen({ navigation }: Props) {
         style={styles.content}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text style={styles.heading}>Welcome Back</Text>
+        <View style={styles.logoMark}>
+          <Ionicons name="heart" size={28} color={colors.white} />
+        </View>
 
-        <PrimaryTextField
-          placeholder="Enter Mobile Number"
-          value={phone}
-          onChangeText={(t) => setPhone(t.replace(/[^0-9]/g, ''))}
-          keyboardType="number-pad"
-          maxLength={10}
-        />
+        <Text style={styles.heading}>Welcome back</Text>
+        <Text style={styles.subtitle}>
+          Sign in to continue finding the right match for your family.
+        </Text>
 
-        <PrimaryButton title="Send OTP" onPress={onSendOTP} disabled={!valid} />
+        <View style={styles.form}>
+          <PrimaryTextField
+            placeholder="Mobile number"
+            value={phone}
+            onChangeText={(t) => setPhone(t.replace(/[^0-9]/g, ''))}
+            keyboardType="number-pad"
+            maxLength={10}
+            icon="call-outline"
+          />
+          <PrimaryButton title="Send OTP" onPress={onSendOTP} disabled={!valid} />
+        </View>
 
         <View style={styles.spacer} />
 
-        <Pressable onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.link}>New here? Create your profile</Text>
+        <Pressable
+          style={styles.footer}
+          onPress={() => navigation.navigate('Signup')}
+          hitSlop={8}
+        >
+          <Text style={styles.footerText}>New here? </Text>
+          <Text style={styles.footerLink}>Create your profile</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -65,20 +77,46 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
-    gap: 20,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.huge,
+  },
+  logoMark: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xxl,
   },
   heading: {
-    ...fonts.title,
+    ...type.largeTitle,
     color: colors.text,
-    marginTop: 24,
+  },
+  subtitle: {
+    ...type.body,
+    color: colors.textSecondary,
+    marginTop: spacing.md,
+    lineHeight: 24,
+  },
+  form: {
+    marginTop: spacing.xxl,
+    gap: spacing.base,
   },
   spacer: {
     flex: 1,
   },
-  link: {
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: spacing.base,
+  },
+  footerText: {
+    ...type.body,
+    color: colors.textSecondary,
+  },
+  footerLink: {
+    ...type.bodyMedium,
     color: colors.primary,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

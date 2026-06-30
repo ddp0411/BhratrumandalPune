@@ -1,44 +1,86 @@
-import React from 'react';
-import { KeyboardTypeOptions, StyleSheet, TextInput } from 'react-native';
-import { colors } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import {
+  KeyboardTypeOptions,
+  StyleSheet,
+  TextInput,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { colors, radius, spacing, type } from '../theme';
 
-// Ported from Views/Components/TextFieldComponents.swift (PrimaryTextField)
 interface PrimaryTextFieldProps {
   placeholder: string;
   value: string;
   onChangeText: (value: string) => void;
   keyboardType?: KeyboardTypeOptions;
   maxLength?: number;
+  icon?: keyof typeof Ionicons.glyphMap;
+  autoCapitalize?: 'none' | 'words' | 'sentences' | 'characters';
+  style?: ViewStyle;
 }
 
+// Input fields per spec: height 56, radius 14, soft gray fill, no underline,
+// icon inside, gray placeholder. Border subtly highlights on focus.
 export default function PrimaryTextField({
   placeholder,
   value,
   onChangeText,
   keyboardType = 'default',
   maxLength,
+  icon,
+  autoCapitalize = 'none',
+  style,
 }: PrimaryTextFieldProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
-    <TextInput
-      style={styles.input}
-      placeholder={placeholder}
-      placeholderTextColor={colors.grayText}
-      value={value}
-      onChangeText={onChangeText}
-      keyboardType={keyboardType}
-      maxLength={maxLength}
-      autoCapitalize="none"
-    />
+    <View style={[styles.field, focused && styles.fieldFocused, style]}>
+      {icon ? (
+        <Ionicons
+          name={icon}
+          size={20}
+          color={focused ? colors.primary : colors.textSecondary}
+          style={styles.icon}
+        />
+      ) : null}
+      <TextInput
+        style={[type.body, styles.input]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textSecondary}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        maxLength={maxLength}
+        autoCapitalize={autoCapitalize}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {
-    width: '100%',
-    padding: 16,
-    borderRadius: 10,
+  field: {
+    height: 56,
+    borderRadius: radius.input,
     backgroundColor: colors.surface,
-    fontSize: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.base,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  fieldFocused: {
+    borderColor: colors.primary,
+    backgroundColor: colors.white,
+  },
+  icon: {
+    marginRight: spacing.md,
+  },
+  input: {
+    flex: 1,
     color: colors.text,
+    paddingVertical: 0,
   },
 });
