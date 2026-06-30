@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import BottomTabBar, { TabKey } from '../components/BottomTabBar';
+import { ProfileViewerProvider } from '../context/ProfileViewerContext';
 import { useWishlist } from '../context/WishlistContext';
 import HomeScreen from '../screens/HomeScreen';
 import MatchesScreen from '../screens/MatchesScreen';
@@ -19,21 +20,23 @@ export default function MainTabs() {
   const onNavigate = (tab: TabKey) => setActive(tab);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.screen}>
-        {active === 'Home' && <HomeScreen onNavigate={onNavigate} />}
-        {active === 'Search' && <SearchScreen />}
-        {active === 'Matches' && <MatchesScreen onNavigate={onNavigate} />}
-        {active === 'Wishlist' && <WishlistScreen onNavigate={onNavigate} />}
-        {active === 'Profile' && <ProfileScreen />}
-      </View>
+    <ProfileViewerProvider>
+      <View style={styles.container}>
+        <View style={styles.screen}>
+          {active === 'Home' && <HomeScreen onNavigate={onNavigate} />}
+          {active === 'Search' && <SearchScreen />}
+          {active === 'Matches' && <MatchesScreen onNavigate={onNavigate} />}
+          {active === 'Wishlist' && <WishlistScreen onNavigate={onNavigate} />}
+          {active === 'Profile' && <ProfileScreen />}
+        </View>
 
-      <BottomTabBar
-        active={active}
-        onChange={setActive}
-        badges={{ Matches: liked.size, Wishlist: shortlisted.size }}
-      />
-    </View>
+        <BottomTabBar
+          active={active}
+          onChange={setActive}
+          badges={{ Matches: liked.size, Wishlist: shortlisted.size }}
+        />
+      </View>
+    </ProfileViewerProvider>
   );
 }
 

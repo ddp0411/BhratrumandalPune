@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useProfileViewer } from '../context/ProfileViewerContext';
 import { useWishlist } from '../context/WishlistContext';
 import { colors, radius, shadow, spacing, type, ANIM_DURATION } from '../theme';
 import { Profile } from '../types';
@@ -8,13 +9,14 @@ import Avatar from './Avatar';
 
 interface ProfileCardProps {
   profile: Profile;
-  onView?: (profile: Profile) => void;
 }
 
 // Profile card per spec: large photo (~65% of card), name/age/community/
 // profession/city, then three actions — Like, Shortlist, View. The heart
-// "bursts" on like for a small moment of delight.
-export default function ProfileCard({ profile, onView }: ProfileCardProps) {
+// "bursts" on like for a small moment of delight. Tapping the photo or View
+// opens the full profile.
+export default function ProfileCard({ profile }: ProfileCardProps) {
+  const { open } = useProfileViewer();
   const { isLiked, isShortlisted, toggleLike, toggleShortlist } = useWishlist();
   const liked = isLiked(profile.id);
   const shortlisted = isShortlisted(profile.id);
@@ -30,7 +32,7 @@ export default function ProfileCard({ profile, onView }: ProfileCardProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.photoWrap}>
+      <Pressable style={styles.photoWrap} onPress={() => open(profile)}>
         <Avatar name={profile.name} tint={profile.tint} radius={0} style={styles.photo} />
         {profile.verified ? (
           <View style={styles.verified}>
@@ -38,7 +40,7 @@ export default function ProfileCard({ profile, onView }: ProfileCardProps) {
             <Text style={styles.verifiedText}>Verified</Text>
           </View>
         ) : null}
-      </View>
+      </Pressable>
 
       <View style={styles.body}>
         <Text style={styles.name}>
@@ -83,7 +85,7 @@ export default function ProfileCard({ profile, onView }: ProfileCardProps) {
 
           <Pressable
             style={[styles.action, styles.viewAction]}
-            onPress={() => onView?.(profile)}
+            onPress={() => open(profile)}
             hitSlop={6}
           >
             <Text style={styles.viewText}>View</Text>
