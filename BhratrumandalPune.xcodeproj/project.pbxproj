@@ -10,9 +10,33 @@
 		B582ACD62EEAFB8000165910 /* BhratrumandalPune.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BhratrumandalPune.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B582AD042EEAFC4B00165910 /* Exceptions for "BhratrumandalPune" folder in "BhratrumandalPune" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ViewModels/AuthViewModel.swift,
+			);
+			target = B582ACD52EEAFB8000165910 /* BhratrumandalPune */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		B582AD052EEAFC4B00165910 /* Exceptions for "BhratrumandalPune" folder in "Copy Bundle Resources" phase from "BhratrumandalPune" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = B582ACD42EEAFB8000165910 /* Resources */;
+			membershipExceptions = (
+				ViewModels/AuthViewModel.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B582ACD82EEAFB8000165910 /* BhratrumandalPune */ = {
+		B582ACF22EEAFBB400165910 /* BhratrumandalPune */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B582AD042EEAFC4B00165910 /* Exceptions for "BhratrumandalPune" folder in "BhratrumandalPune" target */,
+				B582AD052EEAFC4B00165910 /* Exceptions for "BhratrumandalPune" folder in "Copy Bundle Resources" phase from "BhratrumandalPune" target */,
+			);
 			path = BhratrumandalPune;
 			sourceTree = "<group>";
 		};
@@ -32,7 +56,7 @@
 		B582ACCD2EEAFB8000165910 = {
 			isa = PBXGroup;
 			children = (
-				B582ACD82EEAFB8000165910 /* BhratrumandalPune */,
+				B582ACF22EEAFBB400165910 /* BhratrumandalPune */,
 				B582ACD72EEAFB8000165910 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,7 +85,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B582ACD82EEAFB8000165910 /* BhratrumandalPune */,
+				B582ACF22EEAFBB400165910 /* BhratrumandalPune */,
 			);
 			name = BhratrumandalPune;
 			packageProductDependencies = (

@@ -1,17 +1,18 @@
-//
-//  BhratrumandalPuneApp.swift
-//  BhratrumandalPune
-//
-//  Created by Devanshu Patil on 11/12/25.
-//
-
 import SwiftUI
 
 @main
 struct BhratrumandalPuneApp: App {
+    @StateObject private var authVM = AuthViewModel()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if authVM.isLoggedIn {
+                HomeView()
+                    .environmentObject(authVM)
+            } else {
+                SplashView()
+                    .environmentObject(authVM)
+            }
         }
     }
 }
